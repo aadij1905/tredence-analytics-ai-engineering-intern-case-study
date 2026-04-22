@@ -55,11 +55,11 @@ The convolutional structured-pruning variant gives the best accuracy across all 
 
 The plot shows the distribution of final gate values (after sigmoid) for each λ:
 
-- **λ = 1e-6:** A **heavy-tailed distribution** emerges. There is a massive spike near 0 (representing the 35% of weights that are fully pruned), followed by a continuously decaying tail of gates that remain partially open (values between 0.01 and 0.5). This shows the network is actively pushing redundant weights to zero, while retaining a spectrum of partially active weights to maintain capacity.
+- **λ = 1e-6:** A **heavy-tailed distribution** emerges. There is a massive spike near 0 (representing the ~74% of weights that are fully pruned), followed by a continuously decaying tail of gates that remain partially open (values between 0.01 and 0.5). This shows the network is actively pushing redundant weights to zero, while retaining a spectrum of partially active weights to maintain capacity.
 
-- **λ = 1e-5:** The distribution skews heavily toward 0. The strong regulariser prunes the majority of weights (83%). The tail of retained weights is much shorter and closer to zero, yet the network successfully maintains a remarkably high accuracy (58.7%).
+- **λ = 1e-5:** The distribution skews heavily toward 0. The strong regulariser prunes the majority of weights (93%). The tail of retained weights is much shorter and closer to zero, yet the network successfully maintains a remarkably high accuracy (62.67%).
 
-- **λ = 1e-4:** At extreme regularisation, the network aggressively prunes over 97% of its weights. Almost the entire distribution is concentrated exactly at the zero bin. Despite retaining less than 3% of the original capacity, it still achieves ~59% accuracy, demonstrating that the network's core logic can be distilled into a tiny subnetwork.
+- **λ = 1e-4:** At extreme regularisation, the network aggressively prunes over 98.7% of its weights. Almost the entire distribution is concentrated exactly at the zero bin. Despite retaining barely 1.3% of the original capacity, it still achieves 62.51% accuracy, demonstrating that the network's core logic can be distilled into a tiny subnetwork.
 
 For the Conv2D structured-pruning model, this plot is better interpreted as filter-gate behaviour rather than individual-weight pruning. Low λ keeps most channels open; higher λ starts to close a substantial fraction of channels while maintaining strong accuracy.
 
@@ -69,11 +69,11 @@ For the Conv2D structured-pruning model, this plot is better interpreted as filt
 
 The experiment reveals a classic **accuracy–efficiency trade-off**:
 
-1. **λ = 1e-6** provides a balanced starting point, achieving meaningful sparsity (~35% of weights pruned) while maintaining baseline accuracy. The decaying distribution confirms the network is making confident, data-driven pruning decisions for redundant weights while softly penalising the rest.
+1. **λ = 1e-6** provides a balanced starting point, achieving meaningful sparsity (~74% of weights pruned) while maintaining baseline accuracy (63.54%). The decaying distribution confirms the network is making confident, data-driven pruning decisions for redundant weights while softly penalising the rest.
 
-2. **λ = 1e-5** represents a highly compressed state. The network operates with less than 20% of its original weights while sacrificing almost no accuracy (58.7%). This represents the "sweet spot" for edge deployments where model size is a primary constraint.
+2. **λ = 1e-5** represents a highly compressed state. The network operates with less than 7% of its original weights while sacrificing almost no accuracy (62.67%). This represents the "sweet spot" for edge deployments where model size is a primary constraint.
 
-3. **λ = 1e-4** pushes the pruning mechanism to its extreme, distilling the model to just ~3% of its original parameters. 
+3. **λ = 1e-4** pushes the pruning mechanism to its extreme, distilling the model to just ~1.3% of its original parameters while still achieving 62.51% accuracy.
 
 **Key insight:** The self-pruning approach allows the network to learn *which* weights to prune (data-driven), rather than relying on heuristics like post-hoc magnitude pruning. Because Adam normalises gradients, providing a **higher learning rate (2e-2)** specifically for the gate parameters is crucial to allow the sparsity penalty to overcome the classification gradient and successfully drive the gates below the pruning threshold within a short training window.
 
